@@ -519,8 +519,13 @@ static struct class_interface rtc_alarm_interface = {
 };
 
 static struct platform_driver alarm_driver = {
+#if !defined(CONFIG_MACH_SAMSUNG_P5)
+	.suspend = NULL,
+	.resume = NULL,
+#else
 	.suspend = alarm_suspend,
 	.resume = alarm_resume,
+#endif
 	.driver = {
 		.name = "alarm"
 	}
