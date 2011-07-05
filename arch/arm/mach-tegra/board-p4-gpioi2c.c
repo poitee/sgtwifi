@@ -212,8 +212,8 @@ static struct platform_device tegra_gpio_i2c15_device = {
 #endif
 
 static struct max17042_platform_data max17042_pdata = {
-	.sdi_capacity = 0x340A,
-	.sdi_vfcapacity = 0x478A,
+	.sdi_capacity = 0x3642,
+	.sdi_vfcapacity = 0x4866,
 	.atl_capacity = 0x349A,
 	.atl_vfcapacity = 0x4630,
 	.fuel_alert_line = GPIO_FUEL_ALRT,
