@@ -72,7 +72,7 @@
 #include <mach/usb_phy.h>
 #include <mach/tegra_das.h>
 
-#include <mach/gpio-sec.h>
+#include <mach/gpio-p3.h>
 
 #include "gpio-names.h"
 #include "board.h"
@@ -82,7 +82,7 @@
 #include "fuse.h"
 #include "wakeups-t2.h"
 #include <media/s5k5bbgx.h>
-#include <media/s5k5ccgx.h>
+#include <media/imx073.h>
 #ifdef CONFIG_SAMSUNG_LPM_MODE
 #include <linux/moduleparam.h>
 #endif
@@ -1622,60 +1622,37 @@ static void p3_touch_init_hw(void)
 	tegra_gpio_enable(GPIO_TOUCH_INT);
 }
 
-static void sec_s5k5ccgx_init(void)
+static void sec_imx073_init(void)
 {
-	printk("%s,, \n",__func__);
+        tegra_gpio_enable(GPIO_CAM_PMIC_EN1);
+        tegra_gpio_enable(GPIO_CAM_PMIC_EN2);
+        tegra_gpio_enable(GPIO_CAM_PMIC_EN3);
+        tegra_gpio_enable(GPIO_CAM_PMIC_EN4);
+        tegra_gpio_enable(GPIO_CAM_PMIC_EN5);
+        tegra_gpio_enable(GPIO_CAM_L_nRST);
+        tegra_gpio_enable(GPIO_CAM_F_nRST);
+        tegra_gpio_enable(GPIO_CAM_F_STANDBY);
+        tegra_gpio_enable(GPIO_ISP_INT);
 
-	tegra_gpio_enable(GPIO_CAM_PMIC_EN1);	//3M_CORE_1.2V
-	tegra_gpio_enable(GPIO_CAM_PMIC_EN2);	//CAM_AVDD2.8V
-	tegra_gpio_enable(GPIO_CAM_PMIC_EN3);	//2M_DVDD_1.8V
-	tegra_gpio_enable(GPIO_CAM_PMIC_EN4);	//CAM_IO_1.8V
-	tegra_gpio_enable(GPIO_CAM_R_nRST);		//3M nRST
-	tegra_gpio_enable(GPIO_CAM_R_nSTBY);		//3M STBY
-//temp	tegra_gpio_enable(GPIO_CAM_MOVIE_EN);	//flash ??
-	tegra_gpio_enable(GPIO_CAM_FLASH_SET);	//flash ??
+        gpio_request(GPIO_CAM_PMIC_EN1, "CAMERA_PMIC_EN1");
+        gpio_request(GPIO_CAM_PMIC_EN2, "CAMERA_PMIC_EN2");
+        gpio_request(GPIO_CAM_PMIC_EN3, "CAMERA_PMIC_EN3");
+        gpio_request(GPIO_CAM_PMIC_EN4, "CAMERA_PMIC_EN4");
+        gpio_request(GPIO_CAM_PMIC_EN5, "CAMERA_PMIC_EN5");
+        gpio_request(GPIO_CAM_L_nRST, "CAMERA_CAM_Left_nRST");
+        gpio_request(GPIO_CAM_F_nRST, "CAMERA_CAM_Front_nRST");
+        gpio_request(GPIO_CAM_F_STANDBY, "CAMERA_CAM_Front_STANDBY");
+        gpio_request(GPIO_ISP_INT, "ISP_INT");
 
-	gpio_request(GPIO_CAM_PMIC_EN1, "CAMERA_PMIC_EN1");
-	gpio_request(GPIO_CAM_PMIC_EN2, "CAMERA_PMIC_EN2");
-	gpio_request(GPIO_CAM_PMIC_EN3, "CAMERA_PMIC_EN3");
-	gpio_request(GPIO_CAM_PMIC_EN4, "CAMERA_PMIC_EN4");
-	gpio_request(GPIO_CAM_R_nRST, "CAMERA_CAM_Left_nRST");
-	gpio_request(GPIO_CAM_R_nSTBY, "CAMERA_CAM_nSTBY");
-	gpio_request(GPIO_CAM_FLASH_EN, "CAM_FLASH_EN");
-	gpio_request(GPIO_CAM_FLASH_SET, "CAM_FLASH_SET");
-
-	gpio_direction_output(GPIO_CAM_PMIC_EN1, 0);
-	gpio_direction_output(GPIO_CAM_PMIC_EN2, 0);
-	gpio_direction_output(GPIO_CAM_PMIC_EN3, 0);
-	gpio_direction_output(GPIO_CAM_PMIC_EN4, 0);
-	gpio_direction_output(GPIO_CAM_R_nRST, 0);
-	gpio_direction_output(GPIO_CAM_R_nSTBY, 0);
-	gpio_direction_output(GPIO_CAM_FLASH_EN, 0);
-	gpio_direction_output(GPIO_CAM_FLASH_SET, 0);
-
-#if 0
-	printk("<=PCAM=> LOW 1: %d\n",  gpio_get_value(GPIO_CAM_PMIC_EN1));
-	printk("<=PCAM=> LOW 2: %d\n",  gpio_get_value(GPIO_CAM_PMIC_EN2));
-	printk("<=PCAM=> LOW 4: %d\n",  gpio_get_value(GPIO_CAM_PMIC_EN4));
-
-	gpio_direction_output(GPIO_CAM_PMIC_EN1, 1);
-	gpio_direction_output(GPIO_CAM_PMIC_EN2, 1);
-	gpio_direction_output(GPIO_CAM_PMIC_EN4, 1);
-	mdelay(10);
-
-	printk("<=PCAM=> HIGH 1: %d\n",  gpio_get_value(GPIO_CAM_PMIC_EN1));
-	printk("<=PCAM=> HIGH 2: %d\n",	gpio_get_value(GPIO_CAM_PMIC_EN2));
-	printk("<=PCAM=> HIGH 4: %d\n",	gpio_get_value(GPIO_CAM_PMIC_EN4));
-
-	gpio_direction_output(GPIO_CAM_PMIC_EN1, 0);
-	gpio_direction_output(GPIO_CAM_PMIC_EN2, 0);
-	gpio_direction_output(GPIO_CAM_PMIC_EN4, 0);
-	mdelay(10);
-
-	printk("<=PCAM=> LOW 1: %d\n",	gpio_get_value(GPIO_CAM_PMIC_EN1));
-	printk("<=PCAM=> LOW 2: %d\n",	gpio_get_value(GPIO_CAM_PMIC_EN2));
-	printk("<=PCAM=> LOW 4: %d\n",	gpio_get_value(GPIO_CAM_PMIC_EN4));
-#endif
+        gpio_direction_output(GPIO_CAM_PMIC_EN1, 0);
+        gpio_direction_output(GPIO_CAM_PMIC_EN2, 0);
+        gpio_direction_output(GPIO_CAM_PMIC_EN3, 0);
+        gpio_direction_output(GPIO_CAM_PMIC_EN4, 0);
+        gpio_direction_output(GPIO_CAM_PMIC_EN5, 0);
+        gpio_direction_output(GPIO_CAM_L_nRST, 0);
+        gpio_direction_output(GPIO_CAM_F_nRST, 0);
+        gpio_direction_output(GPIO_CAM_F_STANDBY, 0);
+        gpio_direction_input(GPIO_ISP_INT);
 }
 
 struct tegra_pingroup_config mclk = {
@@ -1698,66 +1675,72 @@ static void P3_s5k5ccgx_flash_off()
 	gpio_set_value(GPIO_CAM_FLASH_SET, 0);
 }*/
 
-static void p3_s5k5ccgx_power_on()
+static void p3_imx073_power_on(void)
 {
-	printk("%s,, \n",__func__);
-	gpio_set_value(GPIO_CAM_R_nSTBY, 0); //3M STBY low
-	gpio_set_value(GPIO_CAM_R_nRST, 0); //3M nRST low
-	gpio_set_value(GPIO_CAM_F_nSTBY, 0); // 2M STBY low
-	gpio_set_value(GPIO_CAM_F_nRST, 0); // 2M nRST low
-	gpio_set_value(GPIO_CAM_PMIC_EN1, 0);
-	gpio_set_value(GPIO_CAM_PMIC_EN2, 0);
-	gpio_set_value(GPIO_CAM_PMIC_EN3, 0);
-	gpio_set_value(GPIO_CAM_PMIC_EN4, 0);
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN1, 1); // 3M_CORE_1.2V, 3M_AF_2.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN2, 1); // CAM_AVDD2.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN3, 1); // 2M_DVDD_1.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN4, 1); // CAM_IO_1.8V
-	udelay(100);
+        gpio_set_value(GPIO_CAM_PMIC_EN1, 1);
+        usleep_range(900, 1000);
+        gpio_set_value(GPIO_CAM_PMIC_EN2, 1);
+        usleep_range(900, 1000);
+        if (system_rev >= 0x7) {
+                gpio_set_value(GPIO_CAM_PMIC_EN4, 1);
+                usleep_range(900, 1000);
+                gpio_set_value(GPIO_CAM_PMIC_EN3, 1);
+        } else {
+                gpio_set_value(GPIO_CAM_PMIC_EN3, 1);
+                usleep_range(900, 1000);
+                gpio_set_value(GPIO_CAM_PMIC_EN4, 1);
+        }
+        usleep_range(900, 1000);
+        gpio_set_value(GPIO_CAM_PMIC_EN5, 1);
 
-	tegra_pinmux_set_func(&mclk);
-	tegra_pinmux_set_tristate(TEGRA_PINGROUP_CSUS, TEGRA_TRI_NORMAL);
-	udelay(100);
-
-	gpio_set_value(GPIO_CAM_R_nSTBY, 1); //3M STBY high
-	udelay(200);
-
-	gpio_set_value(GPIO_CAM_R_nRST, 1); //3M nRST high
-	msleep(10);
+        udelay(100);
+        tegra_pinmux_set_func(&mclk);
+        tegra_pinmux_set_tristate(TEGRA_PINGROUP_CSUS, TEGRA_TRI_NORMAL);
+        udelay(10);
+        gpio_set_value(GPIO_CAM_L_nRST, 1);
+        usleep_range(3000, 10000);
 }
 
-static void p3_s5k5ccgx_power_off()
+static void p3_imx073_power_off(void)
 {
-	printk("%s,, \n",__func__);
-	msleep(3);
-	gpio_set_value(GPIO_CAM_R_nRST, 0); //3M nRST Low
-	udelay(100);
-
-	tegra_pinmux_set_tristate(TEGRA_PINGROUP_CSUS, TEGRA_TRI_TRISTATE);
-	udelay(100);
-
-	gpio_set_value(GPIO_CAM_R_nSTBY, 0); //3M STBY Low
-	udelay(100);
-
-	gpio_set_value(GPIO_CAM_PMIC_EN4, 0);// CAM_IO_1.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN3, 0); // 2M_DVDD_1.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN2, 0);// CAM_AVDD2.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN1, 0);// 3M_CORE_1.2V, 3M_AF_2.8V
-	if (system_rev < 14)
-		msleep(800);
-	else
-	{
-		msleep(200);	
-		printk("p3_s5k5ccgx_power_off       msleep--------200ms  system_rev = %d\n", system_rev);		
-	}
+        usleep_range(3000, 10000);
+        gpio_set_value(GPIO_CAM_L_nRST, 0);
+        udelay(10);
+        tegra_pinmux_set_tristate(TEGRA_PINGROUP_CSUS, TEGRA_TRI_TRISTATE);
+        udelay(50);
+        gpio_set_value(GPIO_CAM_PMIC_EN5, 0);
+        usleep_range(900, 1000);
+        if (system_rev >= 0x7) {
+                gpio_set_value(GPIO_CAM_PMIC_EN3, 0);
+                msleep(40);
+                gpio_set_value(GPIO_CAM_PMIC_EN4, 0);
+        } else {
+                gpio_set_value(GPIO_CAM_PMIC_EN4, 0);
+                msleep(40);
+                gpio_set_value(GPIO_CAM_PMIC_EN3, 0);
+        }
+        usleep_range(900, 1000);
+        gpio_set_value(GPIO_CAM_PMIC_EN2, 0);
+        msleep(40);
+        gpio_set_value(GPIO_CAM_PMIC_EN1, 0);
 }
+
+static unsigned int p3_imx073_isp_int_read(void)
+{
+        return gpio_get_value(GPIO_ISP_INT);
+}
+struct imx073_platform_data p3_imx073_data = {
+        .power_on = p3_imx073_power_on,
+        .power_off = p3_imx073_power_off,
+        .isp_int_read = p3_imx073_isp_int_read
+};
+
+static const struct i2c_board_info sec_imx073_camera[] = {
+        {
+                I2C_BOARD_INFO("imx073", 0x3E>>1),
+                .platform_data = &p3_imx073_data,
+        },
+};
 
 #define FLASH_MOVIE_MODE_CURRENT_100_PERCENT	1
 #define FLASH_MOVIE_MODE_CURRENT_79_PERCENT	3
@@ -1768,85 +1751,6 @@ static void p3_s5k5ccgx_power_off()
 #define FLASH_TIME_LATCH_US			500
 #define FLASH_TIME_EN_SET_US			1
 
-/* The AAT1274 uses a single wire interface to write data to its
- * control registers. An incoming value is written by sending a number
- * of rising edges to EN_SET. Data is 4 bits, or 1-16 pulses, and
- * addresses are 17 pulses or more. Data written without an address
- * controls the current to the LED via the default address 17. */
-static void aat1274_write(int value)
-{
-	while (value--) {
-		gpio_set_value(GPIO_CAM_FLASH_SET, 0);
-		udelay(FLASH_TIME_EN_SET_US);
-		gpio_set_value(GPIO_CAM_FLASH_SET, 1);
-		udelay(FLASH_TIME_EN_SET_US);
-	}
-	udelay(FLASH_TIME_LATCH_US);
-	/* At this point, the LED will be on */
-}
-
-static int P3_s5k5ccgx_flash(int enable)
-{
-	/* Turn main flash on or off by asserting a value on the EN line. */
-	printk("========== flash enable = %d \n", enable);
-	gpio_set_value(GPIO_CAM_FLASH_EN, enable);
-
-	return 0;
-}
-
-static int P3_s5k5ccgx_af_assist(int enable)
-{
-	/* Turn assist light on or off by asserting a value on the EN_SET
-	 * line. The default illumination level of 1/7.3 at 100% is used */
-	printk("========== flash af_assist =========== %d \n", enable);
-#if 0	
-	gpio_set_value(GPIO_CAM_FLASH_EN, enable);
-	if (enable) {
-		udelay(100);
-		aat1274_write(FLASH_MOVIE_MODE_CURRENT_28_PERCENT);
-	} else{
-		gpio_set_value(GPIO_CAM_FLASH_EN, 0);
-		gpio_set_value(GPIO_CAM_FLASH_SET, 0);
-	}
-#endif
-	gpio_set_value(GPIO_CAM_FLASH_EN, 0);
-	if (enable)
-		aat1274_write(FLASH_MOVIE_MODE_CURRENT_100_PERCENT);
-	else
-		gpio_set_value(GPIO_CAM_FLASH_SET, 0);
-
-	return 0;
-}
-
-static int P3_s5k5ccgx_torch(int enable)
-{
-	/* Turn torch mode on or off by writing to the EN_SET line. A level
-	 * of 1/7.3 and 50% is used (half AF assist brightness). */
-	gpio_set_value(GPIO_CAM_FLASH_EN, 0);
-	if (enable)
-		aat1274_write(FLASH_MOVIE_MODE_CURRENT_79_PERCENT);
-	else
-		gpio_set_value(GPIO_CAM_FLASH_SET, 0);
-
-	return 0;
-}
-
-struct s5k5ccgx_platform_data p3_s5k5ccgx_data = {
-	.power_on = p3_s5k5ccgx_power_on,
-	.power_off = p3_s5k5ccgx_power_off,
-	.flash_onoff = P3_s5k5ccgx_flash,
-	.af_assist_onoff = P3_s5k5ccgx_af_assist,
-	.torch_onoff = P3_s5k5ccgx_torch,
-	//.isp_int_read = p3_s5k5ccgx_isp_int_read
-};
-
-static const struct i2c_board_info sec_s5k5ccgx_camera[] = {
-	{
-		//I2C_BOARD_INFO("imx073", 0x3E>>1),
-		I2C_BOARD_INFO("s5k5ccgx", 0x78>>1), // 0xAC
-		.platform_data = &p3_s5k5ccgx_data,
-	},
-};
 
 struct tegra_pingroup_config s5k5bbgx_mclk = {
 	TEGRA_PINGROUP_CSUS, TEGRA_MUX_VI_SENSOR_CLK,
@@ -1855,59 +1759,66 @@ struct tegra_pingroup_config s5k5bbgx_mclk = {
 
 void p3_s5k5bbgx_power_on(void)
 {
-	printk("%s,, \n",__func__);
-	gpio_set_value(GPIO_CAM_R_nSTBY, 0); //3M STBY low
-	gpio_set_value(GPIO_CAM_R_nRST, 0); //3M nRST low
-	gpio_set_value(GPIO_CAM_F_nSTBY, 0); // 2M STBY low
-	gpio_set_value(GPIO_CAM_F_nRST, 0); // 2M nRST low
-	gpio_set_value(GPIO_CAM_PMIC_EN1, 0);
-	gpio_set_value(GPIO_CAM_PMIC_EN2, 0);
-	gpio_set_value(GPIO_CAM_PMIC_EN3, 0);
-	gpio_set_value(GPIO_CAM_PMIC_EN4, 0);
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN1, 1); // 3M_CORE_1.2V, 3M_AF_2.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN2, 1); // CAM_AVDD2.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN3, 1); // 2M_DVDD_1.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN4, 1); // CAM_IO_1.8V
-	udelay(100);
+        gpio_set_value(GPIO_CAM_PMIC_EN1, 1);
+        usleep_range(1000, 2000);
+        gpio_set_value(GPIO_CAM_PMIC_EN2, 1);
+        usleep_range(1000, 2000);
+        if (system_rev >= 0x7) {
+                gpio_set_value(GPIO_CAM_PMIC_EN4, 1);
+                usleep_range(1000, 2000);
+                gpio_set_value(GPIO_CAM_PMIC_EN3, 1);
+        } else {
+                gpio_set_value(GPIO_CAM_PMIC_EN3, 1);
+                usleep_range(1000, 2000);
+                gpio_set_value(GPIO_CAM_PMIC_EN4, 1);
+        }
+        usleep_range(1000, 2000);
+        gpio_set_value(GPIO_CAM_PMIC_EN5, 1);
 
-	tegra_pinmux_set_func(&mclk);
-	tegra_pinmux_set_tristate(TEGRA_PINGROUP_CSUS, TEGRA_TRI_NORMAL);
-	udelay(100);
+        udelay(100);
 
-	gpio_set_value(GPIO_CAM_F_nSTBY, 1); // 2M STBY High
-	udelay(100);
+        tegra_pinmux_set_func(&s5k5bbgx_mclk);
+        tegra_pinmux_set_tristate(TEGRA_PINGROUP_CSUS, TEGRA_TRI_NORMAL);
 
-	gpio_set_value(GPIO_CAM_F_nRST, 1); // 2M nRST High
-	msleep(10); //udelay(200);
+        udelay(10);
+
+        gpio_set_value(GPIO_CAM_F_STANDBY, 1);
+        udelay(20);
+
+        gpio_set_value(GPIO_CAM_F_nRST, 1);
+        udelay(10);
+
+        gpio_set_value(GPIO_CAM_PMIC_EN2, 0);
+        usleep_range(3000, 5000);
+
 }
 
 void p3_s5k5bbgx_power_off(void)
 {
-	msleep(3);
-	gpio_set_value(GPIO_CAM_F_nRST, 0); // 2M nRST Low
-	udelay(100);
+        usleep_range(3000, 5000);
+        gpio_set_value(GPIO_CAM_F_nRST, 0);
+        udelay(10);
 
-	gpio_set_value(GPIO_CAM_F_nSTBY, 0); // 2M STBY Low
-	udelay(100);
+        gpio_set_value(GPIO_CAM_F_STANDBY, 0);
+        udelay(10);
+        tegra_pinmux_set_tristate(TEGRA_PINGROUP_CSUS, TEGRA_TRI_TRISTATE);
+        udelay(50);
 
-	tegra_pinmux_set_tristate(TEGRA_PINGROUP_CSUS, TEGRA_TRI_TRISTATE);
-	udelay(100);
-
-	gpio_set_value(GPIO_CAM_PMIC_EN4, 0); // CAM_IO_1.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN3, 0); // 2M_DVDD_1.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN2, 0); // CAM_AVDD2.8V
-	udelay(100);
-	gpio_set_value(GPIO_CAM_PMIC_EN1, 0); // 3M_CORE_1.2V, 3M_AF_2.8V
-	if (system_rev < 14)
-		msleep(800);
-	else
-		msleep(200);	
+        gpio_set_value(GPIO_CAM_PMIC_EN5, 0);
+        usleep_range(1000, 2000);
+        if (system_rev >= 0x7) {
+                gpio_set_value(GPIO_CAM_PMIC_EN3, 0);
+                msleep(500);
+                gpio_set_value(GPIO_CAM_PMIC_EN4, 0);
+        } else {
+                gpio_set_value(GPIO_CAM_PMIC_EN4, 0);
+                msleep(500);
+                gpio_set_value(GPIO_CAM_PMIC_EN3, 0);
+        }
+        usleep_range(1000, 2000);
+        gpio_set_value(GPIO_CAM_PMIC_EN2, 0);
+        usleep_range(1000, 2000);
+        gpio_set_value(GPIO_CAM_PMIC_EN1, 0);
 }
 
 struct s5k5bbgx_platform_data p3_s5k5bbgx_data = {
@@ -1924,14 +1835,14 @@ static const struct i2c_board_info sec_s5k5bbgx_camera[] = {
 
 static int __init p3_camera_init(void)
 {
-	int status;
-	sec_s5k5ccgx_init();
-	status = i2c_register_board_info(3, sec_s5k5ccgx_camera,
-				ARRAY_SIZE(sec_s5k5ccgx_camera));
-	status = i2c_register_board_info(3, sec_s5k5bbgx_camera,
-				ARRAY_SIZE(sec_s5k5bbgx_camera));
+        int status;
+        sec_imx073_init();
+        status = i2c_register_board_info(3, sec_imx073_camera,
+                                ARRAY_SIZE(sec_imx073_camera));
+        status = i2c_register_board_info(3, sec_s5k5bbgx_camera,
+                                ARRAY_SIZE(sec_s5k5bbgx_camera));
 
-	return 0;
+        return 0;
 }
 
 static void p3_touch_exit_hw(void)
