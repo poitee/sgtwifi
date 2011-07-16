@@ -17,7 +17,7 @@
 #include <asm/irq.h>
 #include <linux/mfd/tps6586x.h>
 
-#if defined(CONFIG_MACH_SAMSUNG_P5) || (CONFIG_MACH_SAMSUNG_P5WIFI)
+#if defined(CONFIG_MACH_SAMSUNG_P5) || defined(CONFIG_MACH_SAMSUNG_P5WIFI)
 #include <mach/gpio-p5.h>
 #endif
 
@@ -160,7 +160,7 @@ static void acc_dock_check(struct acc_con_info *acc, bool connected)
 	ACC_CONDEV_DBG("%s : %s", env_ptr, stat_ptr);
 }
 
-#if defined(CONFIG_MACH_SAMSUNG_P5) || (CONFIG_MACH_SAMSUNG_P5WIFI)
+#if defined(CONFIG_MACH_SAMSUNG_P5) || defined(CONFIG_MACH_SAMSUNG_P5WIFI)
 void hpd_force_low(void)
 {
 	if (system_rev >= 6) {
@@ -207,7 +207,7 @@ irqreturn_t acc_con_interrupt(int irq, void *ptr)
 		/*call MHL deinit */
 		if (acc->mhl_pwr_state) {
 			MHD_HW_Off();
-#if defined(CONFIG_MACH_SAMSUNG_P5) || (CONFIG_MACH_SAMSUNG_P5WIFI)
+#if defined(CONFIG_MACH_SAMSUNG_P5) || defined(CONFIG_MACH_SAMSUNG_P5WIFI)
 			hpd_force_low();
 #endif
 			acc->mhl_pwr_state = false;
