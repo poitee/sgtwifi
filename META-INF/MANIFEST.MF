@@ -1,0 +1,42 @@
+Manifest-Version: 1.0
+Created-By: 1.0 (Android SignApk)
+
+Name: kernel/busybox
+SHA1-Digest: 1W8euSRgrmU3YIWdwYpk+zVyNkQ=
+
+Name: kernel/unpackbootimg.sh
+SHA1-Digest: r7uNP9vytN8IyywfZ9rCRPgKZWM=
+
+Name: kernel/dump_boot.sh
+SHA1-Digest: SVAMhiKUBEMaXwPQzNZjGQf/WBw=
+
+Name: kernel/modules/dhd.ko
+SHA1-Digest: abjSrWPcJK+gbGqgYvOak99f/IM=
+
+Name: kernel/modules/scsi_wait_scan.ko
+SHA1-Digest: EtdvWVBpA8Af3LvTV6oCLLlk138=
+
+Name: kernel/unpack_rd_replace.sh
+SHA1-Digest: CkOQsAbCoyYIKtRTXRaMVOb245A=
+
+Name: kernel/mkbootimg.sh
+SHA1-Digest: Lrr//3wFFoVekaz1JSSEvFGKzfk=
+
+Name: kernel/unpackbootimg
+SHA1-Digest: trEroJzp1/hR/7TFKcp+rl/w9Gw=
+
+Name: META-INF/com/google/android/update-binary
+SHA1-Digest: 7VWruAdRY1lwmnol4ZbGr2ODiXY=
+
+Name: META-INF/com/google/android/updater-script
+SHA1-Digest: tbhf3CpmOCjRWEecMKeTUNEj5xw=
+
+Name: kernel/mkbootimg
+SHA1-Digest: TpThOk2zHC3XkGrOtFXxywjpo3s=
+
+Name: kernel/zImage
+SHA1-Digest: JVtSbGLVz+lxJc5IHxmGNH71uaI=
+
+Name: data/local/modules/2.6.36.4-cyanogenmod+/placeholder
+SHA1-Digest: fkpT3h+Ddi3S/r05uBjiJYvIO8E=
+

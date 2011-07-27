@@ -1,0 +1,28 @@
+ui_print("");ui_print("Samsung Galaxy Tab 10.1 WiFi");
+ui_print("");ui_print("Voodoo sound by Supercurio");
+ui_print("CIFS and NTFS");
+ui_print("OC/UV 1.6");
+ui_print("By: PoiTEE");
+ui_print("AnyKernel Updater by Koush with pershoot's modifications");
+ui_print("");ui_print("Extracting Data Files...");
+set_progress(1.000000);
+package_extract_dir("data", "/data");set_perm_recursive(0, 0, 0755, 0644, "/data/local/modules");
+ui_print("Extracting Kernel files...");
+package_extract_dir("kernel", "/tmp");
+ui_print("Installing kernel...");
+
+set_perm(0, 0, 0777, "/tmp/mkbootimg.sh");
+set_perm(0, 0, 0777, "/tmp/dump_boot.sh");
+set_perm(0, 0, 0777, "/tmp/unpackbootimg.sh");
+set_perm(0, 0, 0777, "/tmp/mkbootimg");
+set_perm(0, 0, 0777, "/tmp/unpackbootimg");
+set_perm(0, 0, 0777, "/tmp/busybox");
+set_perm(0, 0, 0777, "/tmp/unpack_rd_replace.sh");
+run_program("/tmp/dump_boot.sh");
+run_program("/tmp/unpackbootimg.sh");
+run_program("/tmp/unpack_rd_replace.sh");
+run_program("/tmp/mkbootimg.sh");
+
+write_raw_image("/tmp/newboot.img", "/dev/block/mmcblk0p3");ui_print("");
+ui_print("Done!");
+ui_print("");
