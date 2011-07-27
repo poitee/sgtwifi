@@ -1476,7 +1476,7 @@ static struct clk tegra_pll_c = {
 		.cf_min    = 1000000,
 		.cf_max    = 6000000,
 		.vco_min   = 20000000,
-		.vco_max   = 1400000000,
+		.vco_max   = 1600000000,
 		.freq_table = tegra_pll_c_freq_table,
 		.lock_delay = 300,
 	},
@@ -1558,7 +1558,7 @@ static struct clk tegra_pll_p = {
 		.cf_min    = 1000000,
 		.cf_max    = 6000000,
 		.vco_min   = 20000000,
-		.vco_max   = 1400000000,
+		.vco_max   = 1600000000,
 		.freq_table = tegra_pll_p_freq_table,
 		.lock_delay = 300,
 	},
@@ -1624,7 +1624,7 @@ static struct clk tegra_pll_a = {
 		.cf_min    = 1000000,
 		.cf_max    = 6000000,
 		.vco_min   = 20000000,
-		.vco_max   = 1400000000,
+		.vco_max   = 1600000000,
 		.freq_table = tegra_pll_a_freq_table,
 		.lock_delay = 300,
 	},
@@ -2479,7 +2479,11 @@ static struct cpufreq_frequency_table freq_table_1p2GHz[] = {
 };
 
 #if defined(CONFIG_TEGRA_OVERCLOCK)
+<<<<<<< HEAD
 static struct cpufreq_frequency_table freq_table_1p4GHz[] = {
+=======
+static struct cpufreq_frequency_table freq_table_1p6GHz[] = {
+>>>>>>> 961501a... Fixed some things with oc..
         { 0, 216000 },
         { 1, 312000 },
         { 2, 456000 },
@@ -2488,10 +2492,20 @@ static struct cpufreq_frequency_table freq_table_1p4GHz[] = {
         { 5, 816000 },
         { 6, 912000 },
         { 7, 1000000 },
+<<<<<<< HEAD
         { 8, 1200000 },
         { 9, 1400000 },
         { 10, CPUFREQ_TABLE_END },
 };
+=======
+        { 8, 1200000 },	    
+	{ 9, 1400000 },
+	{ 10, 1600000 },        
+	{ 11, CPUFREQ_TABLE_END },
+};
+
+
+>>>>>>> 961501a... Fixed some things with oc..
 #endif
 
 static struct tegra_cpufreq_table_data cpufreq_tables[] = {
@@ -2499,7 +2513,12 @@ static struct tegra_cpufreq_table_data cpufreq_tables[] = {
 	{ freq_table_1p0GHz, 2, 6 },
 	{ freq_table_1p2GHz, 2, 7 },
 #if defined(CONFIG_TEGRA_OVERCLOCK)
+<<<<<<< HEAD
 	{ freq_table_1p4GHz, 2, 6 },
+=======
+	{ freq_table_1p6GHz, 2, 7 },
+	
+>>>>>>> 961501a... Fixed some things with oc..
 #endif
 };
 
