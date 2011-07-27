@@ -1715,7 +1715,7 @@ config TEGRA_OVERCLOCK
 	depends on CPU_FREQ
 	default n
 	help
-	  This enables overclocking to 1.4GHZ.
+	  This enables overclocking to 1.6GHZ.
 
 endif
 

@@ -34,6 +34,18 @@
 #define dprintk(msg...) cpufreq_debug_printk(CPUFREQ_DEBUG_CORE, \
 						"cpufreq-core", msg)
 
+<<<<<<< HEAD
+=======
+/* Initial implementation of userspace voltage control */
+#define FREQCOUNT 11
+#define CPUMVMAX 1375
+#define CPUMVMIN 750
+int cpufrequency[FREQCOUNT] = { 1600000, 1400000, 1200000, 1000000, 912000, 816000, 760000, 608000, 456000, 312000, 216000 };
+int cpuvoltage[FREQCOUNT] = { 1375, 1225, 1175, 1125, 1075, 1025, 975, 925, 875, 825, 800 };
+int cpuuvoffset[FREQCOUNT] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+
+>>>>>>> 961501a... Fixed some things with oc..
 /**
  * The "cpufreq driver" - the arch- or hardware-dependent low
  * level driver of CPUFreq support, and its spinlock. This lock
