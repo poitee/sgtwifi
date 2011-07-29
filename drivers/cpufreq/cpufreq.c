@@ -36,10 +36,10 @@
 
 /* Initial implementation of userspace voltage control */
 #define FREQCOUNT 12
-#define CPUMVMAX 1375
-#define CPUMVMIN 750
-int cpufrequency[FREQCOUNT] = { 1600000, 1500000, 1400000, 1200000, 1000000, 912000, 816000, 760000, 608000, 456000, 312000, 216000 };
-int cpuvoltage[FREQCOUNT] = { 1375, 1375, 1225, 1175, 1125, 1075, 1025, 975, 925, 875, 825, 800 };
+#define CPUMVMAX 1400
+#define CPUMVMIN 770
+int cpufrequency[FREQCOUNT] = { 1600000, 1504000, 1408000, 1200000, 1000000, 912000, 816000, 760000, 608000, 456000, 312000, 216000 };
+cpuvoltage[FREQCOUNT] = { 1400, 1325, 1250, 1150, 1100, 1050, 1000, 975, 900, 825, 770, 770 };
 int cpuuvoffset[FREQCOUNT] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 
