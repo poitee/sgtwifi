@@ -86,8 +86,8 @@ static struct mpu3050_platform_data p3_mpu3050_pdata = {
 	 * So X & Y are swapped and Y is negated.
 	 */
 	.orientation = {  0, -1,  0,
-			  -1,  0,  0,
-			  0,  0,  -1 },
+			  1,  0,  0,
+			  0,  0,  1 },
 	.level_shifter = 0,
 	.accel = {
 		.get_slave_descr = kxtf9_get_slave_descr,
@@ -100,22 +100,22 @@ static struct mpu3050_platform_data p3_mpu3050_pdata = {
 		 * So X & Y are both negated.
 		 */
 		.orientation = { -1,  0,  0,
-				  0, 1,  0,
-				  0,  0,  -1 },
+				  0, -1,  0,
+				  0,  0,  1 },
 	},
 	.compass = {
 		.get_slave_descr = ak8975_get_slave_descr,
 		.irq	     = 0,
-		.adapt_num   = 12,            /*bus number 3*/
+		.adapt_num   = 3,            /*bus number 3*/
 		.bus         = EXT_SLAVE_BUS_PRIMARY,
 		.address     = 0x0C,
 		/* Orientation for the Mag.  Part is mounted rotated
 		 * 90 degrees counter-clockwise from natural orientation.
 		 * So X & Y are swapped and Y is negated.
 		 */
-		.orientation = {  0, 1,  0,
+		.orientation = {  0, -1,  0,
 				 1,  0,  0,
-				  0,  0,  -1 },
+				  0,  0,  1 },
 	},
 	.pressure = {
 		.get_slave_descr = NULL,
@@ -207,14 +207,6 @@ int __init p3_sensors_init(void)
 	p3_mpu3050_init();
 
 
-	i2c_register_board_info(0, p3_i2c_mpu_sensor_board_info,
-		ARRAY_SIZE(p3_i2c_mpu_sensor_board_info));
-	i2c_register_board_info(12, p3_i2c_compass_sensor_board_info,
-		ARRAY_SIZE(p3_i2c_compass_sensor_board_info));
-	i2c_register_board_info(5, p3_i2c_light_sensor_board_info,
-		ARRAY_SIZE(p3_i2c_light_sensor_board_info));
-#if 0
-
 	if (system_rev >= 0x2) { /* rev0.2 */
 		i2c_register_board_info(0, p3_i2c_mpu_sensor_board_info,
 			ARRAY_SIZE(p3_i2c_mpu_sensor_board_info));
@@ -246,7 +238,6 @@ int __init p3_sensors_init(void)
 		i2c_register_board_info(3, p3_i2c_compass_sensor_board_info,
 			ARRAY_SIZE(p3_i2c_compass_sensor_board_info));
 	}
-#endif
 
 	return 0;
 }
