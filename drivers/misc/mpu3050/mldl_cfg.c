@@ -1346,7 +1346,7 @@ int mpu3050_resume(struct mldl_cfg *mldl_cfg,
 		return ML_ERROR_INVALID_PARAMETER;
 	if (resume_compass &&
 	    ((!mldl_cfg->compass) || (!mldl_cfg->compass->resume)))
-#ifdef CONFIG_MACH_SAMSUNG_VARIATION_TEGRA
+#if defined(CONFIG_MACH_SAMSUNG_VARIATION_TEGRA) && !defined(CONFIG_MACH_SAMSUNG_P4)
 		resume_compass = 0;
 #else
 		return ML_ERROR_INVALID_PARAMETER;

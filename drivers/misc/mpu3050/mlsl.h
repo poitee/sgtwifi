@@ -17,12 +17,14 @@ extern "C" {
 /* ------------ */
 /* - Defines. - */
 /* ------------ */
+#if !defined(CONFIG_MACH_SAMSUNG_P4)
 /* acceleration data */
 struct acc_data {
 	s16 x;
 	s16 y;
 	s16 z;
 };
+#endif
 
 
 /*
