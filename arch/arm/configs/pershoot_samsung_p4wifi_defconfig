@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.36.4
-# Wed Jul 27 12:44:28 2011
+# Tue Aug  2 20:24:37 2011
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -1653,7 +1653,7 @@ CONFIG_TEGRA_AVP=y
 CONFIG_TEGRA_MEDIASERVER=y
 CONFIG_TEGRA_CAMERA=y
 # CONFIG_VIDEO_OV5650 is not set
-CONFIG_VIDEO_IMX073=y
+# CONFIG_VIDEO_IMX073 is not set
 CONFIG_CAMERA_S5K5CCGX=y
 CONFIG_VIDEO_S5K5BBGX=y
 # CONFIG_VIDEO_OV2710 is not set
