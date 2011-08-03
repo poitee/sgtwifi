@@ -387,7 +387,6 @@ static int p3_get_bat_level(struct power_supply *bat_ps)
 	// Algorithm for reducing time to fully charged (from MAXIM)
 	if(battery->info.charging_enabled &&  // Charging is enabled
 		!battery->info.batt_is_recharging &&  // Not Recharging
-		battery->info.charging_source == CHARGER_AC &&  // Only AC (Not USB cable)
 		!battery->is_first_check &&  // Skip when first check after boot up
 		(fg_vfsoc>70 && (fg_current>20 && fg_current<250) &&
 		(avg_current>20 && avg_current<260))) {
@@ -406,7 +405,7 @@ static int p3_get_bat_level(struct power_supply *bat_ps)
 	else
 		battery->full_check_flag = 0;
 
-	if (battery->info.charging_source == CHARGER_AC &&
+	if ((battery->info.charging_source == CHARGER_AC || battery->info.charging_source == CHARGER_USB) &&
 		battery->info.batt_improper_ta == 0) {
 		if (is_over_abs_time(battery)) {
 			fg_soc = 100;
@@ -454,8 +453,7 @@ __end__:
 	if(battery->is_first_check)
 		battery->is_first_check = false;
 
-	if (battery->info.batt_is_full &&
-		(battery->info.charging_source != CHARGER_USB))
+	if (battery->info.batt_is_full)
 		fg_soc = 100;
 #if 0 // not used
 	else {
@@ -529,7 +527,7 @@ static void p3_set_chg_en(struct battery_data *battery, int enable)
 			} else if (battery->current_cable_status ==
 				CHARGER_USB) {
 				pr_info("USB charger!!");
-				p3_set_charging(battery, 2);
+				p3_set_charging(battery, 1);
 				gpio_set_value(charger_enable_line, 0);
 			} else {
 				pr_info("else type charger!!");
@@ -669,7 +667,15 @@ static int p3_bat_get_charging_status(struct battery_data *battery)
 	switch (battery->info.charging_source) {
 	case CHARGER_BATTERY:
 	case CHARGER_USB:
-		return POWER_SUPPLY_STATUS_DISCHARGING;
+		if (battery->current_cable_status != CHARGER_BATTERY) {
+			if (battery->info.batt_is_full ||
+					battery->info.level == 100)
+				return POWER_SUPPLY_STATUS_FULL;
+			else if(!battery->info.batt_is_full ||
+					battery->info.level != 100)
+				return POWER_SUPPLY_STATUS_CHARGING;
+		} else
+			return POWER_SUPPLY_STATUS_DISCHARGING;
 	case CHARGER_AC:
 		if (battery->info.batt_is_full ||
 			battery->info.level == 100)
@@ -732,11 +738,7 @@ static int p3_usb_get_property(struct power_supply *usb_ps,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_ONLINE:
-#ifdef CONFIG_MACH_SAMSUNG_P3
-		val->intval = 0;
-#else // P4
 		val->intval = (charger == CHARGER_USB ? 1 : 0);
-#endif
 		break;
 	default:
 		return -EINVAL;
@@ -1479,7 +1481,7 @@ static int __devinit p3_bat_probe(struct platform_device *pdev)
 	p3_cable_check_status(battery);
 
 	/* before enable fullcharge interrupt, check fullcharge */
-	if (battery->info.charging_source == CHARGER_AC
+	if ((battery->info.charging_source == CHARGER_AC || battery->info.charging_source == CHARGER_USB)
 		&& battery->info.charging_enabled
 		&& gpio_get_value(pdata->charger.fullcharge_line) == 1)
 		p3_cable_charging(battery);
