@@ -602,11 +602,7 @@ static int __devinit bh1721fvc_probe(struct i2c_client *client,
 		goto err_input_allocate_device_light;
 	}
 	input_set_drvdata(input_dev, bh1721fvc);
-#if defined(CONFIG_MACH_SAMSUNG_P4)
-	input_dev->name = "lightsensor-level";
-#else
 	input_dev->name = "light_sensor";
-#endif
 	input_set_capability(input_dev, EV_ABS, ABS_MISC);
 	input_set_abs_params(input_dev, ABS_MISC,
 		LUX_MIN_VALUE, LUX_MAX_VALUE, 0, 0);

@@ -660,11 +660,7 @@ int ak8975c_probe(struct i2c_client *client,
 
 	ak_data->input_dev = input_dev;
 	input_set_drvdata(input_dev, ak_data);
-#if defined(CONFIG_MACH_SAMSUNG_P4)
-	input_dev->name = "magnetometer";
-#else
 	input_dev->name = "magnetometer_sensor";
-#endif
 
 	/* x-axis of raw magnetic vector */
 	input_set_capability(input_dev, EV_REL, REL_RX);

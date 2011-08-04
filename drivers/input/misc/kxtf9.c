@@ -324,11 +324,7 @@ static int kxtf9_probe(struct i2c_client *client,
 
 	kxtf9->input_dev = input_dev;
 	input_set_drvdata(input_dev, kxtf9);
-#if defined(CONFIG_MACH_SAMSUNG_P4)
-	input_dev->name = "accelerometer";
-#else
 	input_dev->name = "accelerometer_sensor";
-#endif
 
 	input_set_capability(input_dev, EV_REL, REL_X);
 	input_set_abs_params(input_dev, REL_X, -2048, 2047, 0, 0);
