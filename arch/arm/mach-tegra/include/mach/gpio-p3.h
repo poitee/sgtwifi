@@ -17,6 +17,10 @@
 
 #include "../gpio-names.h"
 
+#define GPIO_CAM_F_nSTBY        TEGRA_GPIO_PD5
+#define GPIO_CAM_R_nRST         TEGRA_GPIO_PD2
+#define GPIO_CAM_R_nSTBY        TEGRA_GPIO_PS6
+
 /* 
  * standard: Main Rev0.3 
  * Note: If pin is not matched with Rev0.3, please use TEGRA_GPIO_PXX with system_rev variable.

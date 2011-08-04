@@ -18,7 +18,7 @@
 #if defined(CONFIG_MACH_SAMSUNG_P3)
 #include "gpio-p3.h"
 #elif defined(CONFIG_MACH_SAMSUNG_P4)
-#include "gpio-p4.h"
+#include "gpio-p3.h"
 #elif defined(CONFIG_MACH_SAMSUNG_P4WIFI)
 #include "gpio-p4wifi.h"
 #elif defined(CONFIG_MACH_SAMSUNG_P4LTE)
