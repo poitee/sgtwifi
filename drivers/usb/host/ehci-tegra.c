@@ -146,12 +146,9 @@ static int tegra_ehci_hub_control(
 		goto done;
 	} else if (typeReq == GetPortStatus) {
 		temp = ehci_readl(ehci, status_reg);
-		if (tegra->port_resuming && !(temp & PORT_SUSPEND) &&
-		   time_after_eq(jiffies, ehci->reset_done[wIndex-1])) {
+		if (tegra->port_resuming && !(temp & PORT_SUSPEND)) {
 			/* resume completed */
 			tegra->port_resuming = 0;
-			clear_bit((wIndex & 0xff) - 1, &ehci->suspended_ports);
-			ehci->reset_done[wIndex-1] = 0;
 			tegra_usb_phy_postresume(tegra->phy);
 		}
 	}
@@ -206,16 +203,29 @@ static int tegra_ehci_hub_control(
 		if (!(temp & PORT_SUSPEND))
 			goto done;
 
-		tegra->port_resuming = 1;
-
 		tegra_usb_phy_preresume(tegra->phy);
 
+		ehci->reset_done[wIndex-1] = jiffies + msecs_to_jiffies(25);
+
 		temp &= ~(PORT_RWC_BITS | PORT_WAKE_BITS);
-		/* start resume signaling */
+		/* start resume signalling */
 		ehci_writel(ehci, temp | PORT_RESUME, status_reg);
 
-		ehci->reset_done[wIndex-1] = jiffies + msecs_to_jiffies(25);
-		/* whoever resumes must GetPortStatus to complete it!! */
+		spin_unlock_irqrestore(&ehci->lock, flags);
+		msleep(20);
+		spin_lock_irqsave(&ehci->lock, flags);
+
+		/* polling PORT_RESUME until the controller clear this bit */
+		if (handshake(ehci, status_reg, PORT_RESUME, 0, 2000))
+			pr_err("%s: timeout waiting for PORT_RESUME\n", __func__);
+
+		/* polling PORT_SUSPEND until the controller clear this bit */
+		if (handshake(ehci, status_reg, PORT_SUSPEND, 0, 2000))
+			pr_err("%s: timeout waiting for PORT_SUSPEND\n", __func__);
+
+		ehci->reset_done[wIndex-1] = 0;
+
+		tegra->port_resuming = 1;
 		goto done;
 	}
 
@@ -723,6 +733,8 @@ static int tegra_ehci_bus_resume(struct usb_hcd *hcd)
 		tegra->bus_is_power_down = 0;
 	}
 
+	tegra_usb_phy_preresume(tegra->phy);
+	tegra->port_resuming = 1;
 	return ehci_bus_resume(hcd);
 }
 #endif
