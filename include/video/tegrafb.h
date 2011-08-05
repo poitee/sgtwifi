@@ -53,8 +53,7 @@
 #define TEGRA_FB_WIN_FLAG_INVERT_H     (1 << 0)
 #define TEGRA_FB_WIN_FLAG_INVERT_V     (1 << 1)
 
-#define TEGRA_FB_WIN_LAYOUT_LINEAR 0
-#define TEGRA_FB_WIN_LAYOUT_TILED 1
+#define TEGRA_FB_WIN_FLAG_TILED                (1 << 2)
 #endif
 
 /* set index to -1 to ignore window data */
@@ -65,9 +64,6 @@ struct tegra_fb_windowattr {
 	__u32   flags;
 #endif
 	__u32	blend;
-#if defined(CONFIG_TOUCHWIZ_UX)
-	__u32   layout;
-#endif
 	__u32	offset;
 	__u32	offset_u;
 	__u32	offset_v;
