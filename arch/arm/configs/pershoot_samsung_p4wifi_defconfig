@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.36.4
-# Fri Aug  5 10:28:16 2011
+# Fri Aug  5 16:18:48 2011
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -1744,6 +1744,7 @@ CONFIG_FB_TEGRA_CMC623=y
 CONFIG_NVMAP_CARVEOUT_COMPACTOR=y
 # CONFIG_NVMAP_SEARCH_GLOBAL_HANDLES is not set
 # CONFIG_TEGRA_DSI is not set
+# CONFIG_TOUCHWIZ_UX is not set
 CONFIG_BACKLIGHT_LCD_SUPPORT=y
 CONFIG_LCD_CLASS_DEVICE=y
 # CONFIG_LCD_L4F00242T03 is not set
