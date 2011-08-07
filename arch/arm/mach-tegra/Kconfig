@@ -143,6 +143,13 @@ config TEGRA_FIQ_DEBUGGER
 	help
 	  Enables the FIQ serial debugger on Tegra"
 
+config MACH_SAMSUNG_P4_P7500
+       bool "Samsung P4 GT-P7500 board"
+       depends on MACH_SAMSUNG_VARIATION_TEGRA
+       default n
+       help
+          Support Samsung P4 GT-P7500 board based on Tegra 2
+
 source "arch/arm/mach-tegra/nv/Kconfig"
 
 endif
