@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.36.4
-# Sun Aug  7 16:45:26 2011
+# Mon Aug  8 19:26:05 2011
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -312,6 +312,7 @@ CONFIG_TEGRA_CPU_FREQ_SET_MIN_MAX=y
 CONFIG_TEGRA_CPU_FREQ_MAX=1000000
 CONFIG_TEGRA_CPU_FREQ_MIN=216000
 CONFIG_DISABLE_3D_POWERGATING=y
+CONFIG_TEGRA_STAT_MON=y
 
 #
 # Processor Type
