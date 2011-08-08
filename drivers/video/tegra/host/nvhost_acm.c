@@ -30,7 +30,7 @@
 
 #include "dev.h"
 
-#define ACM_TIMEOUT_MSEC 25
+#define ACM_TIMEOUT_MSEC 40
 
 #define DISABLE_MPE_POWERGATING
 
