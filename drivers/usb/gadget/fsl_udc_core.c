@@ -1218,7 +1218,9 @@ static int fsl_vbus_session(struct usb_gadget *gadget, int is_active)
 	unsigned long	flags;
 
 	udc = container_of(gadget, struct fsl_udc, gadget);
+#if !defined(CONFIG_MACH_SAMSUNG_P4)
 	spin_lock_irqsave(&udc->lock, flags);
+#endif
 
 	VDBG("VBUS %s", is_active ? "on" : "off");
 
@@ -1232,6 +1234,9 @@ static int fsl_vbus_session(struct usb_gadget *gadget, int is_active)
 #endif
 
 		if (udc->vbus_active && !is_active) {
+#if defined(CONFIG_MACH_SAMSUNG_P4)
+			spin_lock_irqsave(&udc->lock, flags);
+#endif
 			/* reset all internal Queues and inform client driver */
 			reset_queues(udc);
 			/* stop the controller and turn off the clocks */
@@ -1242,7 +1247,9 @@ static int fsl_vbus_session(struct usb_gadget *gadget, int is_active)
 			spin_unlock_irqrestore(&udc->lock, flags);
 			fsl_udc_clk_suspend();
 		} else if (!udc->vbus_active && is_active) {
+#if !defined(CONFIG_MACH_SAMSUNG_P4)
 			spin_unlock_irqrestore(&udc->lock, flags);
+#endif
 			fsl_udc_clk_resume();
 			/* setup the controller in the device mode */
 			dr_controller_setup(udc);
@@ -1264,6 +1271,9 @@ static int fsl_vbus_session(struct usb_gadget *gadget, int is_active)
 		return 0;
 	}
 
+#if defined(CONFIG_MACH_SAMSUNG_P4)
+	spin_lock_irqsave(&udc->lock, flags);
+#endif
 	udc->vbus_active = (is_active != 0);
 	if (can_pullup(udc))
 		fsl_writel((fsl_readl(&dr_regs->usbcmd) | USB_CMD_RUN_STOP),
@@ -2017,16 +2027,19 @@ static void reset_irq(struct fsl_udc *udc)
  */
 static void fsl_udc_restart(struct fsl_udc *udc)
 {
-       /* setup the controller in the device mode */
-       dr_controller_setup(udc);
-       /* setup EP0 for setup packet */
-       ep0_setup(udc);
-       /* start the controller */
-       dr_controller_run(udc);
-       /* initialize the USB and EP states */
-       udc->usb_state = USB_STATE_ATTACHED;
-       udc->ep0_state = WAIT_FOR_SETUP;
-       udc->ep0_dir = 0;
+	/* setup the controller in the device mode */
+	dr_controller_setup(udc);
+	/* setup EP0 for setup packet */
+	ep0_setup(udc);
+	/* start the controller */
+	dr_controller_run(udc);
+	/* initialize the USB and EP states */
+	udc->usb_state = USB_STATE_ATTACHED;
+	udc->ep0_state = WAIT_FOR_SETUP;
+	udc->ep0_dir = 0;
+#if defined(CONFIG_MACH_SAMSUNG_P4)
+	udc->vbus_active = 1;
+#endif
 }
 #endif
 

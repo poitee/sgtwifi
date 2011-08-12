@@ -1210,6 +1210,16 @@ void force_cpu_resched(int cpu)
 	raw_spin_unlock_irqrestore(&rq->lock, flags);
 }
 
+void force_cpu_resched(int cpu)
+{
+	struct rq *rq = cpu_rq(cpu);
+	unsigned long flags;
+
+	raw_spin_lock_irqsave(&rq->lock, flags);
+	resched_task(cpu_curr(cpu));
+	raw_spin_unlock_irqrestore(&rq->lock, flags);
+}
+
 #ifdef CONFIG_NO_HZ
 /*
  * In the semi idle case, use the nearest busy cpu for migrating timers
@@ -2604,6 +2614,24 @@ void sched_fork(struct task_struct *p, int clone_flags)
 
 	put_cpu();
 }
+#ifdef CONFIG_PREEMPT_COUNT_CPU
+
+/*
+ * Fetch the preempt count of some cpu's current task.  Must be called
+ * with interrupts blocked.  Stale return value.
+ *
+ * No locking needed as this always wins the race with context-switch-out
+ * + task destruction, since that is so heavyweight.  The smp_rmb() is
+ * to protect the pointers in that race, not the data being pointed to
+ * (which, being guaranteed stale, can stand a bit of fuzziness).
+ */
+int preempt_count_cpu(int cpu)
+{
+	smp_rmb(); /* stop data prefetch until program ctr gets here */
+	return task_thread_info(cpu_curr(cpu))->preempt_count;
+}
+#endif
+
 #ifdef CONFIG_PREEMPT_COUNT_CPU
 
 /*

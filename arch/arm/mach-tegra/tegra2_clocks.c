@@ -35,6 +35,7 @@
 #include "clock.h"
 #include "fuse.h"
 #include "tegra2_emc.h"
+#include "tegra2_statmon.h"
 
 #define RST_DEVICES			0x004
 #define RST_DEVICES_SET			0x300
@@ -152,6 +153,8 @@
 
 static void __iomem *reg_clk_base = IO_ADDRESS(TEGRA_CLK_RESET_BASE);
 static void __iomem *reg_pmc_base = IO_ADDRESS(TEGRA_PMC_BASE);
+
+static void tegra2_clk_shared_bus_update(struct clk *bus);
 
 /*
  * Some peripheral clocks share an enable bit, so refcount the enable bits
@@ -373,12 +376,24 @@ static int tegra2_super_clk_set_rate(struct clk *c, unsigned long rate)
 	return clk_set_rate(c->parent, rate);
 }
 
+static long tegra2_super_clk_round_rate(struct clk *c, unsigned long rate)
+{
+	if (rate < c->min_rate)
+		return c->min_rate;
+	else if (rate > c->max_rate)
+		return c->max_rate;
+	else
+		return rate;
+}
+
+
 static struct clk_ops tegra_super_ops = {
 	.init			= tegra2_super_clk_init,
 	.enable			= tegra2_super_clk_enable,
 	.disable		= tegra2_super_clk_disable,
 	.set_parent		= tegra2_super_clk_set_parent,
 	.set_rate		= tegra2_super_clk_set_rate,
+	.round_rate             = tegra2_super_clk_round_rate,
 };
 
 /* virtual cpu clock functions */
@@ -493,6 +508,7 @@ static struct clk_ops tegra_virtual_sclk_ops = {
 	.init = tegra2_virtual_sclk_init,
 	.set_rate = tegra2_virtual_sclk_set_rate,
 	.round_rate = tegra2_virtual_sclk_round_rate,
+	.shared_bus_update = tegra2_clk_shared_bus_update,
 };
 
 /* virtual cop clock functions. Used to acquire the fake 'cop' clock to
@@ -1107,7 +1123,7 @@ static long tegra2_emc_clk_round_rate(struct clk *c, unsigned long rate)
 	if (new_rate < 0)
 		return c->max_rate;
 
-	BUG_ON(new_rate != tegra2_periph_clk_round_rate(c, new_rate));
+	BUG_ON(abs(new_rate - tegra2_periph_clk_round_rate(c, new_rate)) > 2000);
 
 	return new_rate;
 }
@@ -1137,6 +1153,7 @@ static struct clk_ops tegra_emc_clk_ops = {
 	.set_rate		= &tegra2_emc_clk_set_rate,
 	.round_rate		= &tegra2_emc_clk_round_rate,
 	.reset			= &tegra2_periph_clk_reset,
+	.shared_bus_update	= &tegra2_clk_shared_bus_update,
 };
 
 /* Clock doubler ops */
@@ -1226,25 +1243,38 @@ static struct clk_ops tegra_audio_sync_clk_ops = {
 };
 
 /* call this function after pinmux configuration */
-static void tegra2_cdev_clk_set_parent(struct clk *c)
+static int tegra2_cdev_clk_set_parent(struct clk *c, struct clk *p)
 {
 	const struct clk_mux_sel *mux = 0;
 	const struct clk_mux_sel *sel;
 	enum tegra_pingroup pg = TEGRA_PINGROUP_CDEV1;
 	int val;
 
-	/* Get pinmux setting for cdev1 and cdev2 from APB_MISC register */
-	if (!strcmp(c->name, "clk_dev2"))
-		pg = TEGRA_PINGROUP_CDEV2;
-
-	val = tegra_pinmux_get_func(pg);
-	for (sel = c->inputs; sel->input != NULL; sel++) {
-		if (val == sel->value)
-			mux = sel;
+	if (p) {
+		for (sel = c->inputs; sel->input != NULL; sel++) {
+			if (sel->input == p) {
+				clk_reparent(c, p);
+				return 0;
+			}
+		}
 	}
-	BUG_ON(!mux);
+	else {
+		/* Get pinmux setting for cdev1 and cdev2 from APB_MISC reg */
+		if (!strcmp(c->name, "clk_dev2"))
+			pg = TEGRA_PINGROUP_CDEV2;
 
-	c->parent = mux->input;
+		val = tegra_pinmux_get_func(pg);
+		for (sel = c->inputs; sel->input != NULL; sel++) {
+			if (val == sel->value) {
+				mux = sel;
+				BUG_ON(!mux);
+				clk_reparent(c, mux->input);
+				return 0;
+			}
+		}
+	}
+
+	return -EINVAL;
 }
 
 /* cdev1 and cdev2 (dap_mclk1 and dap_mclk2) ops */
@@ -1269,7 +1299,7 @@ static int tegra2_cdev_clk_enable(struct clk *c)
 {
 	if (!c->parent) {
 		/* Set parent from inputs */
-		tegra2_cdev_clk_set_parent(c);
+		tegra2_cdev_clk_set_parent(c, NULL);
 		clk_enable(c->parent);
 	}
 
@@ -1288,6 +1318,7 @@ static struct clk_ops tegra_cdev_clk_ops = {
 	.init			= &tegra2_cdev_clk_init,
 	.enable			= &tegra2_cdev_clk_enable,
 	.disable		= &tegra2_cdev_clk_disable,
+	.set_parent		= &tegra2_cdev_clk_set_parent,
 };
 
 /* shared bus ops */
@@ -1298,7 +1329,7 @@ static struct clk_ops tegra_cdev_clk_ops = {
  * enabled shared_bus_user clock, with a minimum value set by the
  * shared bus.
  */
-static void tegra_clk_shared_bus_update(struct clk *bus)
+static void tegra2_clk_shared_bus_update(struct clk *bus)
 {
 	struct clk *c;
 	unsigned long rate = bus->min_rate;
@@ -1309,8 +1340,8 @@ static void tegra_clk_shared_bus_update(struct clk *bus)
 			rate = max(c->u.shared_bus_user.rate, rate);
 	}
 
-	if (rate != clk_get_rate(bus))
-		clk_set_rate(bus, rate);
+	if (rate != clk_get_rate_locked(bus))
+		clk_set_rate_locked(bus, rate);
 };
 
 static void tegra_clk_shared_bus_init(struct clk *c)
@@ -1340,11 +1371,15 @@ static int tegra_clk_shared_bus_enable(struct clk *c)
 {
 	c->u.shared_bus_user.enabled = true;
 	tegra_clk_shared_bus_update(c->parent);
+	if (strcmp(c->name, "avp.sclk") == 0)
+		tegra2_statmon_start();
 	return 0;
 }
 
 static void tegra_clk_shared_bus_disable(struct clk *c)
 {
+	if (strcmp(c->name, "avp.sclk") == 0)
+		tegra2_statmon_stop();
 	c->u.shared_bus_user.enabled = false;
 	tegra_clk_shared_bus_update(c->parent);
 }
@@ -2143,6 +2178,8 @@ struct clk tegra_list_periph_clks[] = {
 	PERIPH_CLK("kbc",	"tegra-kbc",		NULL,	36, 	0,	0x31E,	32768,	   mux_clk_32k, PERIPH_NO_RESET),
 	PERIPH_CLK("timer",	"timer",		NULL,	5,	0,	0x31E,	26000000,  mux_clk_m,			0),
 	PERIPH_CLK("kfuse",	"kfuse-tegra",		NULL,	40,	0,	0x31E,  26000000,  mux_clk_m,			0),
+	PERIPH_CLK("fuse",	"fuse-tegra",		"fuse",	39,	0,	0x31E,  26000000,  mux_clk_m,			0),
+	PERIPH_CLK("fuse_burn",	"fuse-tegra",		"fuse_burn",	39,	0,	0x31E,  26000000,  mux_clk_m,		0),
 	PERIPH_CLK("i2s1",	"i2s.0",		NULL,	11,	0x100,	0x31E,	26000000,  mux_pllaout0_audio2x_pllp_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("i2s2",	"i2s.1",		NULL,	18,	0x104,	0x31E,	26000000,  mux_pllaout0_audio2x_pllp_clkm,	MUX | DIV_U71),
 	PERIPH_CLK("spdif_out",	"spdif_out",		NULL,	10,	0x108,	0x31E,	100000000, mux_pllaout0_audio2x_pllp_clkm,	MUX | DIV_U71),
@@ -2344,6 +2381,7 @@ static struct tegra_sku_rate_limit sku_limits[] =
 	RATE_LIMIT("bsea.sclk",	240000000, 0x04, 0x7, 0x08, 0x0F, 0x10),
 	RATE_LIMIT("vde",	240000000, 0x04, 0x7, 0x08, 0x0F, 0x10),
 	RATE_LIMIT("3d",	300000000, 0x04, 0x7, 0x08, 0x0F, 0x10),
+	RATE_LIMIT("mpe",       300000000, 0x04, 0x7, 0x08, 0x0F, 0x10),
 
 	RATE_LIMIT("host1x",	108000000, 0x0F),
 

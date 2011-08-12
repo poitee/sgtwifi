@@ -14,6 +14,7 @@ config ARCH_TEGRA_2x_SOC
 	select USB_ARCH_HAS_EHCI if USB_SUPPORT
 	select USB_ULPI if USB_SUPPORT
 	select USB_ULPI_VIEWPORT if USB_SUPPORT
+	select DISABLE_3D_POWERGATING
 	help
 	  Support for NVIDIA Tegra AP20 and T20 processors, based on the
 	  ARM CortexA9MP CPU and the ARM PL310 L2 cache controller
@@ -142,6 +143,13 @@ config TEGRA_FIQ_DEBUGGER
 	help
 	  Enables the FIQ serial debugger on Tegra"
 
+config MACH_SAMSUNG_P4_P7500
+       bool "Samsung P4 GT-P7500 board"
+       depends on MACH_SAMSUNG_VARIATION_TEGRA
+       default n
+       help
+          Support Samsung P4 GT-P7500 board based on Tegra 2
+
 source "arch/arm/mach-tegra/nv/Kconfig"
 
 endif
@@ -222,3 +230,16 @@ config TEGRA_CPU_FREQ_MIN
         depends on TEGRA_CPU_FREQ_SET_MIN_MAX
         default 216000
 
+config DISABLE_3D_POWERGATING
+	bool "Disable 3D power gate"
+	depends on ARCH_TEGRA_2x_SOC
+	help
+	  This is for silicon errata of 3D power gating. By setting this
+	  config, 3D power will never be gated.
+
+config TEGRA_STAT_MON
+	bool "Enable H/W statistics monitor"
+	depends on ARCH_TEGRA_2x_SOC
+	default n
+	help
+	  Enables support for hardware statistics monitor for AVP.

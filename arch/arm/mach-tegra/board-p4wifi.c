@@ -180,6 +180,7 @@ static int write_bootloader_message(char *cmd, int mode)
 		strcpy(bootmsg.command, "boot-recovery");
 #ifdef CONFIG_KERNEL_DEBUG_SEC
 		kernel_sec_set_debug_level(KERNEL_SEC_DEBUG_LEVEL_LOW);
+		kernel_sec_clear_upload_magic_number();
 #endif
 	}
 	else if (mode == REBOOT_MODE_FASTBOOT)
@@ -432,6 +433,7 @@ static __initdata struct tegra_clk_init_table p3_clk_init_table[] = {
 	{ "pll_c",	"clk_m",	586000000,	true},
 	{ "pll_a",	NULL,		11289600,	true},
 	{ "pll_a_out0",	NULL,		11289600,	true},
+	{ "clk_dev1",   "pll_a_out0",   0,              true},
 	{ "i2s1",	"pll_a_out0",	11289600,	true},
 	{ "i2s2",	"pll_a_out0",	11289600,	true},
 	{ "audio",	"pll_a_out0",	11289600,	true},

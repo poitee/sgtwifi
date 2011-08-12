@@ -82,6 +82,7 @@ unsigned long tegra_carveout_start;
 unsigned long tegra_carveout_size;
 unsigned long tegra_lp0_vec_start;
 unsigned long tegra_lp0_vec_size;
+bool tegra_lp0_vec_relocate;
 unsigned long tegra_grhost_aperture;
 static   bool is_tegra_debug_uart_hsport;
 
@@ -156,7 +157,9 @@ void __init tegra_init_cache(void)
 static void __init tegra_init_power(void)
 {
 	tegra_powergate_power_off(TEGRA_POWERGATE_MPE);
+#if !CONFIG_DISABLE_3D_POWERGATING
 	tegra_powergate_power_off(TEGRA_POWERGATE_3D);
+#endif
 	tegra_powergate_power_off(TEGRA_POWERGATE_PCIE);
 }
 
@@ -464,6 +467,18 @@ void __init tegra_reserve(unsigned long carveout_size, unsigned long fb_size,
 
 	if (tegra_carveout_size && tegra_carveout_start < tegra_grhost_aperture)
 		tegra_grhost_aperture = tegra_carveout_start;
+
+	if (tegra_lp0_vec_size &&
+	   (tegra_lp0_vec_start < memblock_end_of_DRAM())) {
+		if (memblock_reserve(tegra_lp0_vec_start, tegra_lp0_vec_size)) {
+			pr_err("Failed to reserve lp0_vec %08lx@%08lx\n",
+				tegra_lp0_vec_size, tegra_lp0_vec_start);
+			tegra_lp0_vec_start = 0;
+			tegra_lp0_vec_size = 0;
+		}
+		tegra_lp0_vec_relocate = false;
+	} else
+		tegra_lp0_vec_relocate = true;
 
 	/*
 	 * TODO: We should copy the bootloader's framebuffer to the framebuffer

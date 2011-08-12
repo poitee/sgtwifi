@@ -62,9 +62,6 @@ static const int core_speedo_nominal_millivolts[] =
 	{ 1225, 1225, 1300 };
 #endif
 
-#define KHZ 1000
-#define MHZ 1000000
-
 static struct dvfs_rail tegra2_dvfs_rail_vdd_cpu = {
 	.reg_id = "vdd_cpu",
 #if defined(CONFIG_TEGRA_OVERCLOCK)
@@ -239,6 +236,7 @@ static struct dvfs dvfs_init[] = {
 	CORE_DVFS("pcie",    -1, 1, KHZ, 0,      0,      0,      250000, 250000, 250000, 250000),
 	CORE_DVFS("dsi",     -1, 1, KHZ, 100000, 100000, 100000, 500000, 500000, 500000, 500000),
 	CORE_DVFS("tvo",     -1, 1, KHZ, 0,      0,      0,      250000, 250000, 250000, 250000),
+	CORE_DVFS("fuse_burn", -1, 1, KHZ, 0,      0,      0,       26000,  26000,  26000,  26000),
 
 	/*
 	 * The clock rate for the display controllers that determines the
