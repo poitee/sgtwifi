@@ -1867,6 +1867,8 @@ extern void force_cpu_resched(int cpu);
 
 extern void force_cpu_resched(int cpu);
 
+extern void force_cpu_resched(int cpu);
+
 extern unsigned int sysctl_sched_latency;
 extern unsigned int sysctl_sched_min_granularity;
 extern unsigned int sysctl_sched_wakeup_granularity;

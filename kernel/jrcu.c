@@ -91,6 +91,7 @@ static inline void rcu_list_add(struct rcu_list *l, struct rcu_head *h)
  * again.
  */
 static inline void rcu_list_join(struct rcu_list *to, struct rcu_list *from)
+{
 	if (from->head) {
 		if (unlikely(to->tail == NULL)) {
 			to->tail = &to->head;
@@ -136,15 +137,18 @@ static struct rcu_stats {
 static int rcu_hz = RCU_HZ;
 static int rcu_hz_period_us = RCU_HZ_PERIOD_US;
 static int rcu_hz_delta_us = RCU_HZ_DELTA_US;
+
 static int rcu_hz_precise;
 
 int rcu_scheduler_active __read_mostly;
 int rcu_nmi_seen __read_mostly;
+
 static int rcu_wdog_ctr;	/* time since last end-of-batch, in usecs */
 static int rcu_wdog_lim = 10 * USEC_PER_SEC;	/* rcu watchdog interval */
 
 /*
  * Return our CPU id or zero if we are too early in the boot process to
+ * know what that is.  For RCU to work correctly, a cpu named '0' must
  * eventually be present (but need not ever be online).
  */
 #ifdef HAVE_THREAD_INFO_CPU
@@ -195,7 +199,6 @@ void rcu_note_context_switch(int cpu)
 {
 	rcu_eob(cpu);
 }
-
 
 void rcu_note_might_resched(void)
 {
@@ -406,7 +409,9 @@ static void rcu_delimit_batches(void)
 
 	if (pending.head)
 		rcu_invoke_callbacks(&pending);
- /* ------------------ interrupt driver section ------------------ */
+}
+
+/* ------------------ interrupt driver section ------------------ */
 
 /*
  * We drive RCU from a periodic interrupt during most of boot. Once boot
@@ -456,6 +461,8 @@ static __init int rcu_timer_start(void)
 	rcu_timer_restart();
 
 	return 0;
+}
+
 #ifdef CONFIG_JRCU_DAEMON
 static void rcu_timer_stop(void)
 {

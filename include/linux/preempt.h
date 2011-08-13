@@ -57,6 +57,30 @@
 } while (0)
 #endif
 
+/* cannot include rcupdate.h here, so open-code this */
+
+#if defined(CONFIG_JRCU)
+# define __add_preempt_count(val) do { \
+	int newval = (preempt_count() += (val)); \
+	if (newval == (val)) \
+		smp_wmb(); \
+} while (0)
+#else
+# define __add_preempt_count(val) do { preempt_count() += (val); } while (0)
+#endif
+
+#if defined(CONFIG_JRCU_LAZY) || !defined(CONFIG_JRCU)
+# define __sub_preempt_count(val) do { preempt_count() -= (val); } while (0)
+#else
+# define __sub_preempt_count(val) do { \
+	int newval = (preempt_count() -= (val)); \
+	if (newval == 0) { \
+		/* race with preemption OK, preempt will do the mb for us */ \
+		smp_wmb(); \
+	} \
+} while (0)
+#endif
+
 #if defined(CONFIG_DEBUG_PREEMPT) || defined(CONFIG_PREEMPT_TRACER)
   extern void add_preempt_count(int val);
   extern void sub_preempt_count(int val);

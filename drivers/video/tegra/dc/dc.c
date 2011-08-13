@@ -799,7 +799,6 @@ int tegra_dc_update_windows(struct tegra_dc_win *windows[], int n)
 		tegra_dc_writel(dc, h_offset, DC_WINBUF_ADDR_H_OFFSET);
 		tegra_dc_writel(dc, v_offset, DC_WINBUF_ADDR_V_OFFSET);
 
-		if (WIN_IS_TILED(win))
 #endif
 
 		if (win->flags & TEGRA_WIN_FLAG_TILED)
